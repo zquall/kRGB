@@ -1,159 +1,161 @@
 # kRGB
 
-Control nativo y ligero de la iluminación RGB del teclado **Corsair Gaming K65 LUX RGB** desde la barra de menú de macOS.
+Native, lightweight control of **Corsair Gaming K65 LUX RGB** keyboard lighting from the macOS menu bar.
 
-Sin iCUE, sin OpenRGB y **sin una sola dependencia externa**: habla directo con el teclado usando únicamente frameworks del sistema.
-
----
-
-## ¿Por qué existe
-
-iCUE se cuelga en Macs con procesador Intel, y OpenRGB —aunque sí cambia el color— no logra cargar los plugins de efectos. kRGB se salta ambos: implementa el protocolo del teclado sobre IOKit HID en C puro.
-
-El resultado es un app de ~80 KB que consume ~21 MB de RAM y vive discretamente en la barra de menú.
+No iCUE, no OpenRGB, and **zero external dependencies** — it talks to the keyboard directly using nothing but system frameworks.
 
 ---
 
-## Efectos
+## Why it exists
 
-| | Efecto | Qué hace |
+iCUE freezes on Intel Macs, and OpenRGB — while it does change colors — never managed to load its effect plugins. kRGB skips both: it implements the keyboard's protocol over IOKit HID in plain C.
+
+The result is an ~80 KB app that uses ~21 MB of RAM and sits quietly in the menu bar.
+
+---
+
+## Effects
+
+| | Effect | What it does |
 |---|---|---|
-| 🌈 | **Rainbow wave** | Ola de arcoíris recorriendo el teclado. Direccional. |
-| 🌧️ | **Lluvia** | Gotas de colores cayendo por las columnas, con cola que se desvanece. |
-| 🟢 | **Matrix** | Cascada de código verde: cabeza casi blanca y cola larga que se apaga. Direccional. |
-| 🌊 | **Catarata** | Cortina continua de arcoíris que se derrama, con textura de agua. Direccional. |
-| 🍄 | **Psicodélico** | Campo de plasma: los colores se funden y mutan sin repetirse nunca. |
-| 🐛 | **Bicho** | Una sola tecla de luz que deambula rebotando en los bordes, con estela tenue. |
-| 🫧 | **Respiración** | Todo el teclado latiendo suavemente. |
-| 🌀 | **Ciclo de color** | El teclado completo girando de tono. |
-| 🎨 | **Color fijo** | Azul, cian, verde, rojo, morado o blanco. |
-| ⌨️ | **Apagado** | Devuelve el control a los efectos propios del teclado. |
+| 🌈 | **Rainbow wave** | A rainbow wave sweeping across the keyboard. Directional. |
+| 🌧️ | **Rain** (*Lluvia*) | Colored droplets falling down the columns, each with a fading tail. |
+| 🟢 | **Matrix** | Green code cascade: near-white head, long tail that fades out. Directional. |
+| 🌊 | **Waterfall** (*Catarata*) | A continuous rainbow curtain pouring across the board, with flowing water texture. Directional. |
+| 🍄 | **Psychedelic** (*Psicodélico*) | A plasma field where colors blend and morph, never repeating. |
+| 🐛 | **Bug** (*Bicho*) | A single lit key wandering around, bouncing off the edges, with a faint trail. |
+| 🫧 | **Breathing** (*Respiración*) | The whole keyboard pulsing gently. |
+| 🌀 | **Color cycle** (*Ciclo de color*) | The entire keyboard rotating through hues. |
+| 🎨 | **Solid color** (*Color fijo*) | Blue, cyan, green, red, purple or white. |
+| ⌨️ | **Off** (*Apagado*) | Hands control back to the keyboard's own built-in effects. |
 
-**Velocidad:** 5 niveles (Muy lento → Muy rápido).
+**Speed:** 5 levels (very slow → very fast).
 
-**Dirección:** 4 sentidos (izquierda→derecha, derecha→izquierda, arriba→abajo, abajo→arriba). Aplica a Rainbow wave, Matrix y Catarata.
+**Direction:** 4 orientations (left→right, right→left, top→bottom, bottom→top). Applies to Rainbow wave, Matrix and Waterfall.
+
+> The app's menu is in Spanish; English names above are given for reference.
 
 ---
 
-## Requisitos
+## Requirements
 
-- **macOS 10.13 o superior** (probado en 14.7.5 Sonoma, Intel x86_64).
-  macOS 13+ solo hace falta para la opción *Arrancar con la Mac*.
-- **Xcode Command Line Tools** para compilar:
+- **macOS 10.13 or later** (tested on 14.7.5 Sonoma, Intel x86_64).
+  macOS 13+ is only needed for the *launch at login* option.
+- **Xcode Command Line Tools** to build:
   ```bash
   xcode-select --install
   ```
-- Un **Corsair Gaming K65 LUX RGB** (VID `0x1B1C`, PID `0x1B37`).
+- A **Corsair Gaming K65 LUX RGB** (VID `0x1B1C`, PID `0x1B37`).
 
-No requiere permisos especiales de macOS, ni Input Monitoring ni Accesibilidad.
+No special macOS permissions are required — no Input Monitoring, no Accessibility.
 
 ---
 
-## Instalación
+## Installation
 
 ```bash
-git clone git@github.com:zquall/kRGB.git
+git clone https://github.com/zquall/kRGB.git
 cd kRGB
 ./build.sh
 open kRGB.app
 ```
 
-El ícono aparece en la barra de menú (un emoji según el efecto activo). Para dejarlo instalado de forma permanente:
+An icon appears in the menu bar (an emoji reflecting the active effect). To install it permanently:
 
 ```bash
 cp -R kRGB.app /Applications/
 ```
 
-Y activá **Arrancar con la Mac** desde el menú para que se levante solo al iniciar sesión.
+Then enable **Arrancar con la Mac** ("launch at login") from the menu so it starts automatically.
 
 ---
 
-## Uso
+## Usage
 
-Hacé clic en el ícono de la barra de menú:
+Click the menu bar icon:
 
 ```
 kRGB — Psicodélico
-────────────────────────
+────────────────────────────────
   Rainbow wave
-  Lluvia
+  Lluvia               (rain)
   Matrix
-  Catarata
-✓ Psicodélico
-  Bicho
-  Respiración
-  Ciclo de color
-  Color fijo          ▸
-  Apagado
-────────────────────────
-  Velocidad           ▸
-  Dirección           ▸
-────────────────────────
-  Arrancar con la Mac
-  Reintentar conexión
-  Salir
+  Catarata             (waterfall)
+✓ Psicodélico          (psychedelic)
+  Bicho                (bug)
+  Respiración          (breathing)
+  Ciclo de color       (color cycle)
+  Color fijo         ▸ (solid color)
+  Apagado              (off)
+────────────────────────────────
+  Velocidad          ▸ (speed)
+  Dirección          ▸ (direction)
+────────────────────────────────
+  Arrancar con la Mac  (launch at login)
+  Reintentar conexión  (reconnect)
+  Salir                (quit)
 ```
 
-Al salir, kRGB devuelve el control al teclado para que retome sus efectos de hardware.
+On quit, kRGB hands control back to the keyboard so it resumes its own hardware effects.
 
-### Reconexión automática
+### Automatic reconnection
 
-Si desenchufás el teclado o la Mac se duerme, el ícono cambia a ⚠️ y kRGB reintenta la conexión cada ~2 segundos. Cuando el teclado vuelve, retoma el efecto que tenías sin que tengas que hacer nada.
+If you unplug the keyboard or the Mac goes to sleep, the icon switches to ⚠️ and kRGB retries the connection every ~2 seconds. When the keyboard comes back, it picks up the effect you had — no action needed.
 
 ---
 
 ## CLI
 
-Además del app, `build.sh` genera un binario de línea de comandos útil para diagnóstico:
+Besides the app, `build.sh` produces a command-line binary that's handy for diagnostics:
 
 ```bash
-./krgb list              # Lista las interfaces HID del teclado
-./krgb color 255 0 0     # Pinta todo el teclado (valores 0..255)
-./krgb wave              # Rainbow animado (Ctrl-C para parar)
-./krgb hardware          # Devuelve el control al teclado
+./krgb list              # List the keyboard's HID interfaces
+./krgb color 255 0 0     # Paint the whole keyboard (values 0..255)
+./krgb wave              # Animated rainbow (Ctrl-C to stop)
+./krgb hardware          # Hand control back to the keyboard
 ```
 
 ---
 
-## Cómo funciona
+## How it works
 
-El teclado expone varias interfaces HID. La de **control** es la que tiene `PrimaryUsagePage == 0xFFC2` — no la de tecleo (`0x0001`). kRGB la abre con IOKit y le envía reportes *Output* de 64 bytes:
+The keyboard exposes several HID interfaces. The **control** one is the interface whose `PrimaryUsagePage == 0xFFC2` — not the typing interface (`0x0001`). kRGB opens it through IOKit and sends it 64-byte *Output* reports:
 
-1. **Modo software** (`07 05 02`) para que el teclado acepte colores externos en vez de usar sus efectos internos.
-2. **Color por canal**: cada frame se parte en tres canales (R, G y B). Cada canal se manda en paquetes *stream* (`0x7F`) de 60 + 60 + 24 bytes, seguidos de un *submit* (`0x28`).
-3. **Modo hardware** (`07 04 01`) al salir, para devolverle el mando al teclado.
+1. **Software mode** (`07 05 02`) so the keyboard accepts external colors instead of running its internal effects.
+2. **Color per channel**: every frame is split into three channels (R, G and B). Each channel is sent as *stream* packets (`0x7F`) of 60 + 60 + 24 bytes, followed by a *submit* (`0x28`).
+3. **Hardware mode** (`07 04 01`) on exit, handing control back to the keyboard.
 
-La geometría física de cada tecla se obtiene invirtiendo la matriz `matrix_map[6][23]` de OpenRGB, lo que permite las olas direccionales, la catarata y el bicho.
+Each key's physical position is derived by inverting OpenRGB's `matrix_map[6][23]`, which is what makes the directional waves, the waterfall and the bug possible.
 
-### Estructura
+### Layout
 
 ```
-engine.c / engine.h   Motor en C puro: IOKit, protocolo y efectos
-krgb.c                CLI de diagnóstico
-app/                  App de barra de menú (Objective-C / AppKit)
-build.sh              Compila ambos con clang
+engine.c / engine.h   Plain-C engine: IOKit, protocol and effects
+krgb.c                Diagnostic CLI
+app/                  Menu bar app (Objective-C / AppKit)
+build.sh              Builds both with clang
 ```
 
-Se enlaza solo contra `IOKit`, `CoreFoundation`, `Cocoa` y `ServiceManagement`.
+It links only against `IOKit`, `CoreFoundation`, `Cocoa` and `ServiceManagement`.
 
 ---
 
-## Otros teclados Corsair
+## Other Corsair keyboards
 
-El mapa de teclas `keys[]` corresponde al layout *"NORMAL"* de OpenRGB, compartido por varios modelos de la línea LUX. Para probar con otro teclado, cambiá `K65_LUX_PID` en `engine.c` por el PID de tu modelo y recompilá. Puede funcionar directamente o requerir ajustar `keys[]` y `matrix_map`.
-
----
-
-## Limitaciones conocidas
-
-- **No guarda la configuración:** al reiniciar el app vuelve a Rainbow wave en velocidad Normal.
-- **Las cascadas verticales no se ven como columnas rectas.** Las teclas de un teclado están físicamente escalonadas (*stagger*), así que una línea que baja se percibe irregular. Es una limitación del hardware, no del código.
-- Probado únicamente en un K65 LUX RGB (firmware 3.08) sobre macOS Sonoma en Intel.
+The `keys[]` table matches OpenRGB's *"NORMAL"* layout, shared by several models in the LUX line. To try another keyboard, change `K65_LUX_PID` in `engine.c` to your model's PID and rebuild. It may work as-is, or it may need `keys[]` and `matrix_map` adjusted.
 
 ---
 
-## Licencia y créditos
+## Known limitations
 
-Publicado bajo **GPL-2.0**.
+- **Settings are not persisted:** on restart the app goes back to Rainbow wave at normal speed.
+- **Vertical cascades don't read as straight columns.** Keyboard keys are physically staggered, so a descending line looks ragged. That's a hardware constraint, not a bug.
+- Only tested on a K65 LUX RGB (firmware 3.08) running macOS Sonoma on Intel.
 
-El protocolo de comunicación con el teclado está portado del controlador `CorsairPeripheralController` de [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB), licenciado bajo GPL-2.0 — de ahí también provienen la tabla `keys[]` y la matriz de geometría. Todo el crédito del trabajo de ingeniería inversa del protocolo es suyo.
+---
+
+## License and credits
+
+Released under **GPL-2.0**.
+
+The keyboard protocol is ported from the `CorsairPeripheralController` driver in [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB), licensed under GPL-2.0 — the `keys[]` table and the geometry matrix come from there too. All credit for reverse-engineering the protocol is theirs.
