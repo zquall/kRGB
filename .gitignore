@@ -60,3 +60,10 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Artefactos de compilacion (kRGB)
+krgb
+kRGB.app/
+
+# macOS
+.DS_Store
