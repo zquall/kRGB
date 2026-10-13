@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
-- (void)updateUI;   /* refresca ícono/estado; siempre en el hilo principal */
+- (void)updateUI;   /* refreshes icon/status; always on the main thread */
 @end

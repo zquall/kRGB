@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------------------*\
-| krgb.c  —  CLI de prueba para el motor kRGB (Corsair K65 LUX RGB / macOS)    |
+| krgb.c  —  Test CLI for the kRGB engine (Corsair K65 LUX RGB / macOS)        |
 |                                                                             |
-|   Compilar:  clang -O2 -Wall krgb.c engine.c -o krgb \                      |
-|                    -framework IOKit -framework CoreFoundation               |
-|   Uso:       ./krgb list | color R G B | wave [vel] | hardware              |
+|   Build:  clang -O2 -Wall krgb.c engine.c -o krgb \                         |
+|                 -framework IOKit -framework CoreFoundation                  |
+|   Usage:  ./krgb list | color R G B | wave [speed] | hardware               |
 \*---------------------------------------------------------------------------*/
 
 #include "engine.h"
@@ -24,7 +24,7 @@ static void run_wave(double speed)
     struct timespec frame = { 0, 33L * 1000L * 1000L };   /* ~30 fps */
     double base = 0.0;
 
-    printf("Rainbow wave (~30 fps). Ctrl-C para parar.\n");
+    printf("Rainbow wave (~30 fps). Press Ctrl-C to stop.\n");
     fflush(stdout);
 
     while(!g_stop)
@@ -36,7 +36,7 @@ static void run_wave(double speed)
     }
 
     krgb_hardware_mode();
-    printf("\nEfecto detenido, control devuelto al teclado.\n");
+    printf("\nEffect stopped, control handed back to the keyboard.\n");
 }
 
 int main(int argc, char **argv)
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     {
         if(krgb_open() != 0) return 1;
         krgb_hardware_mode();
-        printf("Control devuelto al teclado (modo hardware).\n");
+        printf("Control handed back to the keyboard (hardware mode).\n");
         return 0;
     }
 
@@ -70,17 +70,17 @@ int main(int argc, char **argv)
         krgb_frame_uniform((unsigned char)atoi(argv[2]),
                            (unsigned char)atoi(argv[3]),
                            (unsigned char)atoi(argv[4]));
-        printf("Color (%s, %s, %s) enviado a %d teclas.\n",
+        printf("Color (%s, %s, %s) sent to %d keys.\n",
                argv[2], argv[3], argv[4], krgb_num_keys());
         return 0;
     }
 
     fprintf(stderr,
-        "Uso:\n"
-        "  %s list             Lista las interfaces HID del teclado\n"
-        "  %s color R G B       Pinta todo el teclado (valores 0..255)\n"
-        "  %s wave [velocidad]  Efecto rainbow animado (Ctrl-C para parar)\n"
-        "  %s hardware          Devuelve el control al teclado\n",
+        "Usage:\n"
+        "  %s list            List the keyboard's HID interfaces\n"
+        "  %s color R G B     Paint the whole keyboard (values 0..255)\n"
+        "  %s wave [speed]    Animated rainbow effect (Ctrl-C to stop)\n"
+        "  %s hardware        Hand control back to the keyboard\n",
         argv[0], argv[0], argv[0], argv[0]);
     return 1;
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 #---------------------------------------------------------------------------#
-# build.sh  —  Compila el CLI (krgb) y el app de barra (kRGB.app)           #
-#              Cero dependencias externas: solo frameworks del sistema.      #
+# build.sh  —  Builds the CLI (krgb) and the menu bar app (kRGB.app)        #
+#              Zero external dependencies: system frameworks only.          #
 #---------------------------------------------------------------------------#
 set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -21,10 +21,10 @@ clang -O2 -Wall -fobjc-arc -I"$ROOT" app/main.m app/AppDelegate.m engine.c \
       -framework ServiceManagement
 cp app/Info.plist "$APP/Contents/Info.plist"
 
-# Firma ad-hoc (evita avisos de Gatekeeper al ser local).
+# Ad-hoc signature (avoids Gatekeeper warnings for a local build).
 codesign -s - --force "$APP" >/dev/null 2>&1 || true
 
 echo ""
-echo "Listo:"
-echo "  App: $ROOT/$APP   (abrir con: open '$ROOT/$APP')"
-echo "  CLI: $ROOT/krgb   (probar con: ./krgb wave)"
+echo "Done:"
+echo "  App: $ROOT/$APP   (open with: open '$ROOT/$APP')"
+echo "  CLI: $ROOT/krgb   (try with: ./krgb wave)"

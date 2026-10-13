@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
-| AppDelegate.m  —  Barra de menú kRGB                                        |
+| AppDelegate.m  —  kRGB menu bar                                             |
 |                                                                             |
-|   Ícono de estado + menú (efectos / color fijo / velocidad / arranque).     |
-|   El efecto corre en un hilo de fondo; el menú solo cambia estado.          |
+|   Status icon + menu (effects / solid color / speed / launch at login).     |
+|   The effect runs on a background thread; the menu only changes state.      |
 \*---------------------------------------------------------------------------*/
 #import "AppDelegate.h"
 #import "engine.h"
@@ -10,18 +10,18 @@
 #import <time.h>
 
 /*---------------------------------------------------------*\
-| Estado compartido con el hilo de efecto                   |
+| State shared with the effect thread                       |
 \*---------------------------------------------------------*/
 static volatile int          g_effect      = KRGB_RAINBOW;
-static volatile int          g_speed_milli = 2000;        /* grados/frame * 1000 */
-static volatile unsigned int g_static_rgb  = 0x0020FF;    /* color por defecto   */
+static volatile int          g_speed_milli = 2000;        /* degrees/frame * 1000 */
+static volatile unsigned int g_static_rgb  = 0x0020FF;    /* default color        */
 static volatile int          g_run         = 1;
 static volatile int          g_have_dev    = 0;
-static volatile int          g_direction   = DIR_R2L;      /* dirección de la ola rainbow */
-static volatile int          g_retry_req   = 0;            /* el menú pidió reconectar    */
-static volatile int          g_loop_done   = 0;            /* el hilo de efecto ya salió  */
+static volatile int          g_direction   = DIR_R2L;      /* travel direction         */
+static volatile int          g_retry_req   = 0;            /* menu asked to reconnect  */
+static volatile int          g_loop_done   = 0;            /* effect thread has exited */
 
-/* Puntero al delegate para poder refrescar la UI desde el hilo de efecto. */
+/* Pointer to the delegate so the effect thread can refresh the UI. */
 static AppDelegate *g_app = nil;
 
 static void notify_ui(void)
@@ -30,30 +30,30 @@ static void notify_ui(void)
 }
 
 /*---------------------------------------------------------*\
-| Hilo de efecto: dueño único de la E/S al teclado          |
+| Effect thread: sole owner of the keyboard I/O             |
 \*---------------------------------------------------------*/
 static void effect_loop(void)
 {
     int last = -1;
     double phase = 0.0;
-    int    ticks = 0;                                /* para espaciar los reintentos */
+    int    ticks = 0;                                /* spaces out the retries */
     struct timespec fast = { 0, 33L  * 1000000L };   /* ~30 fps */
     struct timespec slow = { 0, 200L * 1000000L };
 
     while(g_run)
     {
-        /*--- Sin teclado: reintentar cada ~2 s (o ya si lo pidió el menú) ---*/
+        /*--- No keyboard: retry every ~2 s (or right away if the menu asked) ---*/
         if(!g_have_dev)
         {
             if(g_retry_req || ++ticks >= 10)          /* 10 * 200 ms = 2 s */
             {
                 g_retry_req = 0;
                 ticks       = 0;
-                krgb_close();                         /* suelta cualquier handle viejo */
+                krgb_close();                         /* drop any stale handle */
                 if(krgb_open() == 0)
                 {
                     g_have_dev = 1;
-                    last       = -1;                  /* fuerza reenviar el modo */
+                    last       = -1;                  /* force the mode to be re-sent */
                     notify_ui();
                 }
             }
@@ -61,7 +61,7 @@ static void effect_loop(void)
             continue;
         }
 
-        /*--- Reconexión manual con el teclado ya abierto: reabrir igual ---*/
+        /*--- Manual reconnect with the keyboard already open: reopen anyway ---*/
         if(g_retry_req)
         {
             g_retry_req = 0;
@@ -84,7 +84,7 @@ static void effect_loop(void)
         if(eff != KRGB_OFF)
             krgb_render(eff, phase, g_static_rgb, g_direction);
 
-        /*--- ¿Se cayó el enlace? Soltar y pasar a modo reintento ---*/
+        /*--- Did the link drop? Release it and switch to retry mode ---*/
         if(krgb_link_lost())
         {
             krgb_close();
@@ -109,10 +109,10 @@ static void effect_loop(void)
 {
     NSStatusItem *statusItem;
     NSMenuItem   *miStatus;
-    NSArray<NSMenuItem *> *effectItems;    /* items con tag = código de efecto */
+    NSArray<NSMenuItem *> *effectItems;    /* items tagged with the effect code */
     NSMenuItem   *colorParent;
-    NSArray<NSMenuItem *> *speedItems;     /* items con tag = velocidad (milli) */
-    NSArray<NSMenuItem *> *dirItems;       /* items con tag = dirección         */
+    NSArray<NSMenuItem *> *speedItems;     /* items tagged with the speed (milli) */
+    NSArray<NSMenuItem *> *dirItems;       /* items tagged with the direction     */
     NSMenuItem   *miLogin;
 }
 
@@ -128,20 +128,20 @@ static void effect_loop(void)
     [menu addItem:miStatus];
     [menu addItem:[NSMenuItem separatorItem]];
 
-    /*----- Efectos -----*/
-    NSMenuItem *rainbow = [self effectItem:@"Rainbow wave"    tag:KRGB_RAINBOW   toMenu:menu];
-    NSMenuItem *rain    = [self effectItem:@"Lluvia"          tag:KRGB_RAIN      toMenu:menu];
-    NSMenuItem *matrix  = [self effectItem:@"Matrix"          tag:KRGB_MATRIX     toMenu:menu];
-    NSMenuItem *cascade = [self effectItem:@"Catarata"        tag:KRGB_CASCADE    toMenu:menu];
-    NSMenuItem *psy     = [self effectItem:@"Psicodélico"     tag:KRGB_PSY        toMenu:menu];
-    NSMenuItem *bug     = [self effectItem:@"Bicho"           tag:KRGB_BUG       toMenu:menu];
-    NSMenuItem *breath  = [self effectItem:@"Respiración"     tag:KRGB_BREATHING toMenu:menu];
-    NSMenuItem *cycle   = [self effectItem:@"Ciclo de color"  tag:KRGB_CYCLE     toMenu:menu];
+    /*----- Effects -----*/
+    NSMenuItem *rainbow = [self effectItem:@"Rainbow wave" tag:KRGB_RAINBOW   toMenu:menu];
+    NSMenuItem *rain    = [self effectItem:@"Rain"         tag:KRGB_RAIN      toMenu:menu];
+    NSMenuItem *matrix  = [self effectItem:@"Matrix"       tag:KRGB_MATRIX    toMenu:menu];
+    NSMenuItem *cascade = [self effectItem:@"Waterfall"    tag:KRGB_CASCADE   toMenu:menu];
+    NSMenuItem *psy     = [self effectItem:@"Psychedelic"  tag:KRGB_PSY       toMenu:menu];
+    NSMenuItem *bug     = [self effectItem:@"Bug"          tag:KRGB_BUG       toMenu:menu];
+    NSMenuItem *breath  = [self effectItem:@"Breathing"    tag:KRGB_BREATHING toMenu:menu];
+    NSMenuItem *cycle   = [self effectItem:@"Color cycle"  tag:KRGB_CYCLE     toMenu:menu];
 
-    colorParent = [[NSMenuItem alloc] initWithTitle:@"Color fijo" action:nil keyEquivalent:@""];
+    colorParent = [[NSMenuItem alloc] initWithTitle:@"Solid color" action:nil keyEquivalent:@""];
     NSMenu *colorMenu = [[NSMenu alloc] init];
-    NSArray *colors = @[ @[@"Azul", @(0x0020FF)], @[@"Cian", @(0x00FFFF)], @[@"Verde", @(0x00FF00)],
-                         @[@"Rojo", @(0xFF0000)], @[@"Morado", @(0x8000FF)], @[@"Blanco", @(0xFFFFFF)] ];
+    NSArray *colors = @[ @[@"Blue", @(0x0020FF)], @[@"Cyan", @(0x00FFFF)], @[@"Green", @(0x00FF00)],
+                         @[@"Red", @(0xFF0000)], @[@"Purple", @(0x8000FF)], @[@"White", @(0xFFFFFF)] ];
     for(NSArray *c in colors)
     {
         NSMenuItem *it = [[NSMenuItem alloc] initWithTitle:c[0]
@@ -153,17 +153,17 @@ static void effect_loop(void)
     colorParent.submenu = colorMenu;
     [menu addItem:colorParent];
 
-    NSMenuItem *off = [self effectItem:@"Apagado (control al teclado)" tag:KRGB_OFF toMenu:menu];
+    NSMenuItem *off = [self effectItem:@"Off (keyboard takes over)" tag:KRGB_OFF toMenu:menu];
 
     effectItems = @[ rainbow, rain, matrix, cascade, psy, bug, breath, cycle, off ];
 
     [menu addItem:[NSMenuItem separatorItem]];
 
-    /*----- Velocidad (5 niveles) -----*/
-    NSMenuItem *speedParent = [[NSMenuItem alloc] initWithTitle:@"Velocidad" action:nil keyEquivalent:@""];
+    /*----- Speed (5 levels) -----*/
+    NSMenuItem *speedParent = [[NSMenuItem alloc] initWithTitle:@"Speed" action:nil keyEquivalent:@""];
     NSMenu *speedMenu = [[NSMenu alloc] init];
-    NSArray *speeds = @[ @[@"Muy lento", @500], @[@"Lento", @1000], @[@"Normal", @2000],
-                         @[@"Rápido", @4000], @[@"Muy rápido", @7000] ];
+    NSArray *speeds = @[ @[@"Very slow", @500], @[@"Slow", @1000], @[@"Normal", @2000],
+                         @[@"Fast", @4000], @[@"Very fast", @7000] ];
     NSMutableArray *sItems = [NSMutableArray array];
     for(NSArray *s in speeds)
     {
@@ -178,11 +178,11 @@ static void effect_loop(void)
     speedParent.submenu = speedMenu;
     [menu addItem:speedParent];
 
-    /*----- Dirección de la ola (rainbow) -----*/
-    NSMenuItem *dirParent = [[NSMenuItem alloc] initWithTitle:@"Dirección" action:nil keyEquivalent:@""];
+    /*----- Travel direction (rainbow / Matrix / waterfall) -----*/
+    NSMenuItem *dirParent = [[NSMenuItem alloc] initWithTitle:@"Direction" action:nil keyEquivalent:@""];
     NSMenu *dirMenu = [[NSMenu alloc] init];
-    NSArray *dirs = @[ @[@"Izquierda → Derecha", @(DIR_L2R)], @[@"Derecha → Izquierda", @(DIR_R2L)],
-                       @[@"Arriba → Abajo", @(DIR_T2B)], @[@"Abajo → Arriba", @(DIR_B2T)] ];
+    NSArray *dirs = @[ @[@"Left → Right", @(DIR_L2R)], @[@"Right → Left", @(DIR_R2L)],
+                       @[@"Top → Bottom", @(DIR_T2B)], @[@"Bottom → Top", @(DIR_B2T)] ];
     NSMutableArray *dItems = [NSMutableArray array];
     for(NSArray *d in dirs)
     {
@@ -199,25 +199,25 @@ static void effect_loop(void)
 
     [menu addItem:[NSMenuItem separatorItem]];
 
-    /*----- Arranque con la Mac -----*/
-    miLogin = [[NSMenuItem alloc] initWithTitle:@"Arrancar con la Mac"
+    /*----- Launch at login -----*/
+    miLogin = [[NSMenuItem alloc] initWithTitle:@"Launch at login"
                                          action:@selector(toggleLogin:) keyEquivalent:@""];
     miLogin.target = self;
     [menu addItem:miLogin];
 
-    NSMenuItem *retry = [[NSMenuItem alloc] initWithTitle:@"Reintentar conexión"
+    NSMenuItem *retry = [[NSMenuItem alloc] initWithTitle:@"Reconnect"
                                                    action:@selector(retry:) keyEquivalent:@""];
     retry.target = self;
     [menu addItem:retry];
 
-    NSMenuItem *quit = [[NSMenuItem alloc] initWithTitle:@"Salir"
+    NSMenuItem *quit = [[NSMenuItem alloc] initWithTitle:@"Quit"
                                                   action:@selector(quit:) keyEquivalent:@"q"];
     quit.target = self;
     [menu addItem:quit];
 
     statusItem.menu = menu;
 
-    /*----- Abrir teclado y arrancar el hilo -----*/
+    /*----- Open the keyboard and start the thread -----*/
     g_have_dev = (krgb_open() == 0) ? 1 : 0;
     [self updateUI];
 
@@ -244,19 +244,19 @@ static void effect_loop(void)
 - (void)updateUI
 {
     NSString *icon, *label;
-    if(!g_have_dev) { icon = @"⚠️"; label = @"kRGB — teclado desconectado (reconectando…)"; }
+    if(!g_have_dev) { icon = @"⚠️"; label = @"kRGB — keyboard disconnected (reconnecting…)"; }
     else switch(g_effect)
     {
-        case KRGB_RAINBOW:   icon = @"🌈"; label = @"kRGB — Rainbow wave";   break;
-        case KRGB_RAIN:      icon = @"🌧️"; label = @"kRGB — Lluvia";         break;
-        case KRGB_MATRIX:    icon = @"🟢"; label = @"kRGB — Matrix";         break;
-        case KRGB_CASCADE:   icon = @"🌊"; label = @"kRGB — Catarata";       break;
-        case KRGB_PSY:       icon = @"🍄"; label = @"kRGB — Psicodélico";    break;
-        case KRGB_BUG:       icon = @"🐛"; label = @"kRGB — Bicho";          break;
-        case KRGB_BREATHING: icon = @"🫧"; label = @"kRGB — Respiración";    break;
-        case KRGB_CYCLE:     icon = @"🌀"; label = @"kRGB — Ciclo de color"; break;
-        case KRGB_STATIC:    icon = @"🎨"; label = @"kRGB — Color fijo";     break;
-        default:             icon = @"⌨️"; label = @"kRGB — Apagado";        break;
+        case KRGB_RAINBOW:   icon = @"🌈"; label = @"kRGB — Rainbow wave"; break;
+        case KRGB_RAIN:      icon = @"🌧️"; label = @"kRGB — Rain";         break;
+        case KRGB_MATRIX:    icon = @"🟢"; label = @"kRGB — Matrix";       break;
+        case KRGB_CASCADE:   icon = @"🌊"; label = @"kRGB — Waterfall";    break;
+        case KRGB_PSY:       icon = @"🍄"; label = @"kRGB — Psychedelic";  break;
+        case KRGB_BUG:       icon = @"🐛"; label = @"kRGB — Bug";          break;
+        case KRGB_BREATHING: icon = @"🫧"; label = @"kRGB — Breathing";    break;
+        case KRGB_CYCLE:     icon = @"🌀"; label = @"kRGB — Color cycle";  break;
+        case KRGB_STATIC:    icon = @"🎨"; label = @"kRGB — Solid color";  break;
+        default:             icon = @"⌨️"; label = @"kRGB — Off";          break;
     }
     statusItem.button.title = icon;
     miStatus.title = label;
@@ -271,7 +271,7 @@ static void effect_loop(void)
     miLogin.state = [self loginEnabled] ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
-/*----- Acciones del menú -----*/
+/*----- Menu actions -----*/
 - (void)pickEffect:(NSMenuItem *)sender { g_effect = (int)sender.tag; [self updateUI]; }
 
 - (void)pickColor:(NSMenuItem *)sender
@@ -298,7 +298,7 @@ static void effect_loop(void)
         if(err)
         {
             NSAlert *a = [[NSAlert alloc] init];
-            a.messageText     = @"No se pudo cambiar el arranque al inicio";
+            a.messageText     = @"Could not change the launch-at-login setting";
             a.informativeText = err.localizedDescription;
             [a runModal];
         }
@@ -306,13 +306,13 @@ static void effect_loop(void)
     else
     {
         NSAlert *a = [[NSAlert alloc] init];
-        a.messageText = @"Requiere macOS 13 o superior";
+        a.messageText = @"Requires macOS 13 or later";
         [a runModal];
     }
     [self updateUI];
 }
 
-/* No tocamos el device desde aquí: el hilo de efecto es el dueño de la E/S. */
+/* We never touch the device here: the effect thread owns the I/O. */
 - (void)retry:(id)sender { g_retry_req = 1; }
 
 - (void)quit:(id)sender { [NSApp terminate:nil]; }
@@ -322,10 +322,10 @@ static void effect_loop(void)
     g_run = 0;
     struct timespec t = { 0, 20L * 1000000L };
     for(int i = 0; i < 40 && !g_loop_done; i++)
-        nanosleep(&t, NULL);          /* espera a que el hilo suelte la E/S (máx ~800 ms) */
+        nanosleep(&t, NULL);          /* wait for the thread to release the I/O (max ~800 ms) */
     if(g_have_dev)
     {
-        krgb_hardware_mode();         /* devuelve el control al teclado  */
+        krgb_hardware_mode();         /* hand control back to the keyboard */
         krgb_close();
     }
 }

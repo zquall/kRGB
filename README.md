@@ -19,21 +19,19 @@ The result is an ~80 KB app that uses ~21 MB of RAM and sits quietly in the menu
 | | Effect | What it does |
 |---|---|---|
 | 🌈 | **Rainbow wave** | A rainbow wave sweeping across the keyboard. Directional. |
-| 🌧️ | **Rain** (*Lluvia*) | Colored droplets falling down the columns, each with a fading tail. |
+| 🌧️ | **Rain** | Colored droplets falling down the columns, each with a fading tail. |
 | 🟢 | **Matrix** | Green code cascade: near-white head, long tail that fades out. Directional. |
-| 🌊 | **Waterfall** (*Catarata*) | A continuous rainbow curtain pouring across the board, with flowing water texture. Directional. |
-| 🍄 | **Psychedelic** (*Psicodélico*) | A plasma field where colors blend and morph, never repeating. |
-| 🐛 | **Bug** (*Bicho*) | A single lit key wandering around, bouncing off the edges, with a faint trail. |
-| 🫧 | **Breathing** (*Respiración*) | The whole keyboard pulsing gently. |
-| 🌀 | **Color cycle** (*Ciclo de color*) | The entire keyboard rotating through hues. |
-| 🎨 | **Solid color** (*Color fijo*) | Blue, cyan, green, red, purple or white. |
-| ⌨️ | **Off** (*Apagado*) | Hands control back to the keyboard's own built-in effects. |
+| 🌊 | **Waterfall** | A continuous rainbow curtain pouring across the board, with flowing water texture. Directional. |
+| 🍄 | **Psychedelic** | A plasma field where colors blend and morph, never repeating. |
+| 🐛 | **Bug** | A single lit key wandering around, bouncing off the edges, with a faint trail. |
+| 🫧 | **Breathing** | The whole keyboard pulsing gently. |
+| 🌀 | **Color cycle** | The entire keyboard rotating through hues. |
+| 🎨 | **Solid color** | Blue, cyan, green, red, purple or white. |
+| ⌨️ | **Off** | Hands control back to the keyboard's own built-in effects. |
 
 **Speed:** 5 levels (very slow → very fast).
 
 **Direction:** 4 orientations (left→right, right→left, top→bottom, bottom→top). Applies to Rainbow wave, Matrix and Waterfall.
-
-> The app's menu is in Spanish; English names above are given for reference.
 
 ---
 
@@ -66,7 +64,7 @@ An icon appears in the menu bar (an emoji reflecting the active effect). To inst
 cp -R kRGB.app /Applications/
 ```
 
-Then enable **Arrancar con la Mac** ("launch at login") from the menu so it starts automatically.
+Then enable **Launch at login** from the menu so it starts automatically.
 
 ---
 
@@ -75,25 +73,25 @@ Then enable **Arrancar con la Mac** ("launch at login") from the menu so it star
 Click the menu bar icon:
 
 ```
-kRGB — Psicodélico
-────────────────────────────────
+kRGB — Psychedelic
+───────────────────────────
   Rainbow wave
-  Lluvia               (rain)
+  Rain
   Matrix
-  Catarata             (waterfall)
-✓ Psicodélico          (psychedelic)
-  Bicho                (bug)
-  Respiración          (breathing)
-  Ciclo de color       (color cycle)
-  Color fijo         ▸ (solid color)
-  Apagado              (off)
-────────────────────────────────
-  Velocidad          ▸ (speed)
-  Dirección          ▸ (direction)
-────────────────────────────────
-  Arrancar con la Mac  (launch at login)
-  Reintentar conexión  (reconnect)
-  Salir                (quit)
+  Waterfall
+✓ Psychedelic
+  Bug
+  Breathing
+  Color cycle
+  Solid color              ▸
+  Off (keyboard takes over)
+───────────────────────────
+  Speed                    ▸
+  Direction                ▸
+───────────────────────────
+  Launch at login
+  Reconnect
+  Quit
 ```
 
 On quit, kRGB hands control back to the keyboard so it resumes its own hardware effects.
